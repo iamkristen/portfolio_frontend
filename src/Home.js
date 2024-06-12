@@ -4,7 +4,6 @@ import { FaUser, FaEnvelope } from "react-icons/fa";
 import { IoIosPaper } from "react-icons/io";
 import { MdWork, MdOutlineClose } from "react-icons/md";
 import { SiGooglechat } from "react-icons/si";
-import { BsTelephonePlusFill } from "react-icons/bs";
 import Left from "./components/home/Left";
 import About from "./components/about/About";
 import Resume from "./components/resume/Resume";
@@ -12,23 +11,31 @@ import Projects from "./components/projects/Projects";
 import Blog from "./components/blog/Blog";
 import Contact from "./components/contact/Contact";
 import Sidenav from "./components/home/sidenav/Sidenav";
+import usePersistedState from "./usePersistedState";
 
 const Home = () => {
-  const [about, setAbout] = useState(true);
-  const [resume, setResume] = useState(false);
-  const [projects, setProjects] = useState(false);
-  const [blog, setBlog] = useState(false);
-  const [contact, setContact] = useState(false);
+  const [about, setAbout] = usePersistedState("about", true);
+  const [resume, setResume] = usePersistedState("resume", false);
+  const [projects, setProjects] = usePersistedState("projects", false);
+  const [blog, setBlog] = usePersistedState("blog", false);
+  const [contact, setContact] = usePersistedState("contact", false);
   const [sidenav, setSidenav] = useState(false);
   const ref = useRef();
 
   useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (e.target.contains(ref.current)) {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
         setSidenav(false);
       }
-    });
+    };
+
+    document.body.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.body.removeEventListener("click", handleClickOutside);
+    };
   }, []);
+
   return (
     <div className="w-full lgl:w-[85%] h-full lgl:h-[85%] bg-transparent text-white z-50 flex items-start justify-between p-4 lgl:p-0">
       {/* ================= Left Icons End here ======================== */}
@@ -73,19 +80,18 @@ const Home = () => {
         <div className="w-full h-80 bg-bodyColor rounded-3xl flex flex-col items-center justify-between py-6">
           {/* About Icon */}
           <span
-            onClick={() =>
-              setAbout(true) &
-              setResume(false) &
-              setProjects(false) &
-              setBlog(false) &
-              setContact(false)
-            }
+            onClick={() => {
+              setAbout(true);
+              setResume(false);
+              setProjects(false);
+              setBlog(false);
+              setContact(false);
+            }}
             className={`${
               about
                 ? "text-designColor"
                 : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
             } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-            // className="w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
           >
             <FaUser />
             <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
@@ -94,13 +100,13 @@ const Home = () => {
           </span>
           {/* Resume Icon */}
           <span
-            onClick={() =>
-              setAbout(false) &
-              setResume(true) &
-              setProjects(false) &
-              setBlog(false) &
-              setContact(false)
-            }
+            onClick={() => {
+              setAbout(false);
+              setResume(true);
+              setProjects(false);
+              setBlog(false);
+              setContact(false);
+            }}
             className={`${
               resume
                 ? "text-designColor"
@@ -114,13 +120,13 @@ const Home = () => {
           </span>
           {/* Project Icon */}
           <span
-            onClick={() =>
-              setAbout(false) &
-              setResume(false) &
-              setProjects(true) &
-              setBlog(false) &
-              setContact(false)
-            }
+            onClick={() => {
+              setAbout(false);
+              setResume(false);
+              setProjects(true);
+              setBlog(false);
+              setContact(false);
+            }}
             className={`${
               projects
                 ? "text-designColor"
@@ -134,13 +140,13 @@ const Home = () => {
           </span>
           {/* Blog Icon */}
           <span
-            onClick={() =>
-              setAbout(false) &
-              setResume(false) &
-              setProjects(false) &
-              setBlog(true) &
-              setContact(false)
-            }
+            onClick={() => {
+              setAbout(false);
+              setResume(false);
+              setProjects(false);
+              setBlog(true);
+              setContact(false);
+            }}
             className={`${
               blog
                 ? "text-designColor"
@@ -154,13 +160,13 @@ const Home = () => {
           </span>
           {/* Contact Icon */}
           <span
-            onClick={() =>
-              setAbout(false) &
-              setResume(false) &
-              setProjects(false) &
-              setBlog(false) &
-              setContact(true)
-            }
+            onClick={() => {
+              setAbout(false);
+              setResume(false);
+              setProjects(false);
+              setBlog(false);
+              setContact(true);
+            }}
             className={`${
               contact
                 ? "text-designColor"
@@ -172,12 +178,6 @@ const Home = () => {
               Contact
             </span>
           </span>
-          {/* <span className="w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group">
-            <BsTelephonePlusFill />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              Call
-            </span>
-          </span> */}
         </div>
         {/* ======= Other Icons End */}
       </div>
