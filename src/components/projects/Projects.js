@@ -23,7 +23,7 @@ const Projects = () => {
           <div className="px-6" key={project._id}>
             <ProjectsCard
               title={project.title}
-              category={project.category}
+              category={project.projectType}
               image={project.banner}
               projectId={project._id}
             />
