@@ -11,6 +11,21 @@ body, p, ul, ol, table {
     line-height: 1.5;
     color: #333;
   }
+
+  ol, ul {
+    padding-left: 2em;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
   
   /* Style images */
   img {

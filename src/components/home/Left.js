@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 import { BsCloudLightningFill } from "react-icons/bs";
-import CV from "../../assets/Noor_Mohammad_resume.pdf";
+import CV from "../../assets/Kristen-cv.pdf";
 import { useAboutData } from "../../context/about_data";
 import { useSocialLinks } from "../../context/socail_link";
 import * as ReactIcons from "react-icons/fa"; // Import all icons from Font Awesome
@@ -91,9 +91,14 @@ const Left = () => {
               Download CV <BsCloudLightningFill />
             </button>
           </a>
-          <button className="w-1/2 border-t-[1px] border-t-zinc-800 text-sm tracking-wide uppercase flex justify-center items-center gap-2 hover:text-designColor duration-300">
-            Contact me <ReactIcons.FaEnvelope />
-          </button>
+          <a
+            href={`mailto:kuushwaha33ravi@gmail.com`}
+            className="w-1/2 border-t-[1px] border-t-zinc-800 text-sm tracking-wide uppercase flex justify-center items-center gap-2 hover:text-designColor duration-300"
+          >
+            <button className="w-full h-full flex justify-center items-center gap-2">
+              Contact me <ReactIcons.FaEnvelope />
+            </button>
+          </a>
         </div>
       </div>
     </div>

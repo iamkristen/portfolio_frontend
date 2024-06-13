@@ -2,68 +2,94 @@ import React, { useState } from "react";
 import axios from "axios";
 import { FiSend } from "react-icons/fi";
 import Title from "../home/Title";
+import { useContactData } from "../../context/contact";
 
 const Contact = () => {
-  const [clientName, setClientName] = useState("");
-  const [email, setEmail] = useState("");
-  const [messages, setMessages] = useState("");
+  const {
+    address,
+    email: contactEmail,
+    phone,
+    freelance,
+    openTo,
+  } = useContactData(); // Access contact data from context
 
-  // ================= Error Messages Start here =================
+  const [clientName, setClientName] = useState("");
+  const [inputEmail, setInputEmail] = useState("");
+  const [messages, setMessages] = useState("");
   const [errClientName, setErrClientName] = useState(false);
   const [errEmail, setErrEmail] = useState(false);
   const [errMessages, setErrMessage] = useState(false);
-  // ================= Error Messages End here ===================
-  const [seuccessMsg, setSuccessMsg] = useState("");
-  // ================= Email Validation Start here ===============
-  const EmailValidation = (email) => {
-    return String(email)
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const EmailValidation = (inputEmail) => {
+    return String(inputEmail)
       .toLowerCase()
       .match(/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/);
   };
-  // ================= Email Validation End here =================
 
   const handleName = (e) => {
     setClientName(e.target.value);
     setErrClientName(false);
   };
+
   const handleEmail = (e) => {
-    setEmail(e.target.value);
+    setInputEmail(e.target.value);
     setErrEmail(false);
   };
+
   const handleMessages = (e) => {
     setMessages(e.target.value);
     setErrMessage(false);
   };
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
+
     if (!clientName) {
       setErrClientName(true);
     }
-    if (!email) {
+
+    if (!inputEmail) {
       setErrEmail(true);
     } else {
-      if (!EmailValidation(email)) {
+      if (!EmailValidation(inputEmail)) {
         setErrEmail(true);
       }
     }
+
     if (!messages) {
       setErrMessage(true);
     }
-    if (clientName && email && EmailValidation(email) && messages) {
-      axios.post("", {
-        name: clientName,
-        email: email,
-        message: messages,
-      });
-      setSuccessMsg(
-        `Hello dear ${clientName}, Your messages has been sent successfully. Thank you for your time!`
-      );
-      setClientName("");
-      setEmail("");
-      setMessages("");
+
+    if (clientName && inputEmail && EmailValidation(inputEmail) && messages) {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/mailbox/add",
+          {
+            fullName: clientName,
+            email: inputEmail,
+            message: messages,
+          }
+        );
+
+        if (response.data.success) {
+          setSuccessMsg(
+            `Hello ${clientName}, your message has been sent successfully. Thank you for contacting us!`
+          );
+
+          setClientName("");
+          setInputEmail("");
+          setMessages("");
+        } else {
+          console.error("Failed to send message:", response.data.error);
+          // Handle error cases if needed
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
     }
   };
+
   return (
     <div className="w-full">
       <Title title="Get" subTitle="in Touch" />
@@ -73,13 +99,13 @@ const Contact = () => {
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Address
             </span>
-            London - UK
+            {address}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Phone
             </span>
-            +44 7810378238
+            {phone}
           </p>
         </div>
         <div className="w-full lgl:w-1/2">
@@ -87,27 +113,27 @@ const Contact = () => {
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Email
             </span>
-            kuushwaha33ravi@gmail.com
+            {contactEmail}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Freelance
             </span>
-            Available
+            {freelance}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Open to
             </span>
-            Work
+            {openTo}
           </p>
         </div>
       </div>
       <div className="w-full mt-10">
         <Title title="Send" subTitle="Messages" />
-        {seuccessMsg ? (
+        {successMsg ? (
           <p className="text-center text-base font-titleFont p-20 text-designColor">
-            {seuccessMsg}
+            {successMsg}
           </p>
         ) : (
           <form
@@ -125,13 +151,12 @@ const Contact = () => {
                     ? "border-red-600 focus-visible:border-red-600"
                     : "border-zinc-600 focus-visible:border-designColor"
                 } w-full bg-transparent border-2 px-4 py-2 text-base text-gray-200 outline-none duration-300`}
-                // className="w-full bg-transparent border-2 px-4 py-2 text-base text-gray-200 border-zinc-600 focus-visible:border-designColor outline-none duration-300"
                 type="text"
                 placeholder="Full Name"
               />
               <input
                 onChange={handleEmail}
-                value={email}
+                value={inputEmail}
                 className={`${
                   errEmail
                     ? "border-red-600 focus-visible:border-red-600"
