@@ -1,7 +1,7 @@
 import React from "react";
-import { FaAppStoreIos } from "react-icons/fa";
+// import { FaAppStoreIos } from "react-icons/fa";
 import { AiTwotoneAppstore } from "react-icons/ai";
-import { SiAntdesign } from "react-icons/si";
+// import { SiAntdesign } from "react-icons/si";
 import { BiCodeAlt } from "react-icons/bi";
 import ServicesCard from "./ServicesCard";
 
