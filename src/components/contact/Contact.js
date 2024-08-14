@@ -64,7 +64,7 @@ const Contact = () => {
     if (clientName && inputEmail && EmailValidation(inputEmail) && messages) {
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/mailbox/add",
+          process.env.REACT_APP_API_URL + "api/mailbox/add",
           {
             fullName: clientName,
             email: inputEmail,
