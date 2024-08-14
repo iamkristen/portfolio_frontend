@@ -22,7 +22,7 @@ export const ContactProvider = ({ children }) => {
     const fetchContactData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/contact-me/get"
+          process.env.REACT_APP_API_URL + "api/contact-me/get"
         );
         if (response.data.success) {
           setContactData(response.data.data);

@@ -15,7 +15,7 @@ export const SocialLinksProvider = ({ children }) => {
     const fetchSocialLinks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/social/get"
+          process.env.REACT_APP_API_URL + "api/social/get"
         );
         setSocialLinks(response.data.data);
       } catch (error) {

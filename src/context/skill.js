@@ -18,7 +18,7 @@ export const SkillsDataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/skills/get"
+          process.env.REACT_APP_API_URL + "api/skills/get"
         );
         setSkillsData(response.data.data);
         setIsLoading(false);

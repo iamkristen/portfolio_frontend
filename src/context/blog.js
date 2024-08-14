@@ -17,7 +17,9 @@ export const BlogsDataProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/blogs/get");
+        const response = await axios.get(
+          process.env.REACT_APP_API_URL + "api/blogs/get"
+        );
         setBlogsData(response.data.data);
         setIsLoading(false);
       } catch (error) {

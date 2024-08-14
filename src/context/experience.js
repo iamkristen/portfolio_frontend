@@ -18,7 +18,7 @@ export const ExperienceDataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/experience/get"
+          process.env.REACT_APP_API_URL + "api/experience/get"
         );
         setExperienceData(response.data.data);
         setIsLoading(false);

@@ -18,7 +18,7 @@ export const ProjectsDataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/projects/get"
+          process.env.REACT_APP_API_URL + "api/projects/get"
         );
         setProjectsData(response.data.data);
         setIsLoading(false);

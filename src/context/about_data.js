@@ -13,7 +13,7 @@ export const AboutDataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/about-me/get"
+          process.env.REACT_APP_API_URL + "api/about-me/get"
         );
         setAboutData(response.data.data);
         setIsLoading(false);

@@ -18,7 +18,7 @@ export const EducationDataProvider = ({ children }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/education/get"
+          process.env.REACT_APP_API_URL + "api/education/get"
         );
         setEducationData(response.data.data);
         setIsLoading(false);
