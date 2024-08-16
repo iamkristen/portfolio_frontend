@@ -10,4 +10,4 @@ const ServicesCard = ({ icons, title, subTitle }) => {
   );
 };
 
-export default ServicesCard;
+export default React.memo(ServicesCard);

@@ -13,4 +13,4 @@ const FunFactCard = ({ icon, des }) => {
   );
 };
 
-export default FunFactCard;
+export default React.memo(FunFactCard);

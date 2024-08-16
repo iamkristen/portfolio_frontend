@@ -63,4 +63,4 @@ const BlogDetailPage = () => {
   );
 };
 
-export default BlogDetailPage;
+export default React.memo(BlogDetailPage);

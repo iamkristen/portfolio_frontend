@@ -1,27 +1,32 @@
-import React, { useEffect, useRef, useState } from "react";
+// Home.js
+import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope } from "react-icons/fa";
 import { IoIosPaper } from "react-icons/io";
 import { MdWork, MdOutlineClose } from "react-icons/md";
 import { SiGooglechat } from "react-icons/si";
 import Left from "./components/home/Left";
-import About from "./components/about/About";
-import Resume from "./components/resume/Resume";
-import Projects from "./components/projects/Projects";
-import Blog from "./components/blog/Blog";
-import Contact from "./components/contact/Contact";
 import Sidenav from "./components/home/sidenav/Sidenav";
+import IconButton from "./components/button/Iconbutton";
 import usePersistedState from "./usePersistedState";
+import Loader from "./components/loader/loader";
+
+// Lazy loading components
+const About = lazy(() => import("./components/about/About"));
+const Resume = lazy(() => import("./components/resume/Resume"));
+const Projects = lazy(() => import("./components/projects/Projects"));
+const Blog = lazy(() => import("./components/blog/Blog"));
+const Contact = lazy(() => import("./components/contact/Contact"));
 
 const Home = () => {
-  const [about, setAbout] = usePersistedState("about", true);
-  const [resume, setResume] = usePersistedState("resume", false);
-  const [projects, setProjects] = usePersistedState("projects", false);
-  const [blog, setBlog] = usePersistedState("blog", false);
-  const [contact, setContact] = usePersistedState("contact", false);
+  const [activeSection, setActiveSection] = usePersistedState(
+    "activeSection",
+    "about"
+  );
   const [sidenav, setSidenav] = useState(false);
   const ref = useRef();
 
+  // Handle click outside of the sidenav to close it
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -36,13 +41,25 @@ const Home = () => {
     };
   }, []);
 
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
+
+  const sections = {
+    about: <About />,
+    resume: <Resume />,
+    projects: <Projects />,
+    blog: <Blog />,
+    contact: <Contact />,
+  };
+
   return (
     <div className="w-full lgl:w-[85%] h-full lgl:h-[85%] bg-transparent text-white z-50 flex items-start justify-between p-4 lgl:p-0">
-      {/* ================= Left Icons End here ======================== */}
+      {/* ================= Left Icons Start here ====================== */}
       <div className="w-16 h-96 bg-transparent hidden lgl:flex flex-col gap-4">
         {/* ======= Home Icon start */}
         <div
-          // onClick={() => setSidenav(true)}
+          onClick={() => setSidenav(true)}
           className="w-full h-20 bg-bodyColor rounded-3xl flex justify-center items-center cursor-pointer group"
         >
           <div className="flex flex-col gap-1.5 overflow-hidden">
@@ -76,176 +93,71 @@ const Home = () => {
           </div>
         )}
         {/* ============= Sidenav End here =============== */}
+
         {/* ======= Other Icons Start */}
         <div className="w-full h-80 bg-bodyColor rounded-3xl flex flex-col items-center justify-between py-6">
-          {/* About Icon */}
-          <span
-            onClick={() => {
-              setAbout(true);
-              setResume(false);
-              setProjects(false);
-              setBlog(false);
-              setContact(false);
-            }}
-            className={`${
-              about
-                ? "text-designColor"
-                : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
-            } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-          >
-            <FaUser />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              About
-            </span>
-          </span>
-          {/* Resume Icon */}
-          <span
-            onClick={() => {
-              setAbout(false);
-              setResume(true);
-              setProjects(false);
-              setBlog(false);
-              setContact(false);
-            }}
-            className={`${
-              resume
-                ? "text-designColor"
-                : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
-            } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-          >
-            <IoIosPaper />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              Resume
-            </span>
-          </span>
-          {/* Project Icon */}
-          <span
-            onClick={() => {
-              setAbout(false);
-              setResume(false);
-              setProjects(true);
-              setBlog(false);
-              setContact(false);
-            }}
-            className={`${
-              projects
-                ? "text-designColor"
-                : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
-            } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-          >
-            <MdWork />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              Projects
-            </span>
-          </span>
-          {/* Blog Icon */}
-          <span
-            onClick={() => {
-              setAbout(false);
-              setResume(false);
-              setProjects(false);
-              setBlog(true);
-              setContact(false);
-            }}
-            className={`${
-              blog
-                ? "text-designColor"
-                : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
-            } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-          >
-            <SiGooglechat />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              Blog
-            </span>
-          </span>
-          {/* Contact Icon */}
-          <span
-            onClick={() => {
-              setAbout(false);
-              setResume(false);
-              setProjects(false);
-              setBlog(false);
-              setContact(true);
-            }}
-            className={`${
-              contact
-                ? "text-designColor"
-                : "w-full h-6 text-textColor text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group"
-            } w-full h-6 text-xl flex items-center justify-center hover:text-designColor duration-300 cursor-pointer relative group`}
-          >
-            <FaEnvelope />
-            <span className="text-black font-medium text-xs uppercase bg-designColor px-4 py-[1px] rounded-xl absolute left-0 translate-x-8 group-hover:translate-x-12 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
-              Contact
-            </span>
-          </span>
+          <IconButton
+            Icon={FaUser}
+            label="About"
+            isActive={activeSection === "about"}
+            onClick={() => handleSectionChange("about")}
+          />
+          <IconButton
+            Icon={IoIosPaper}
+            label="Resume"
+            isActive={activeSection === "resume"}
+            onClick={() => handleSectionChange("resume")}
+          />
+          <IconButton
+            Icon={MdWork}
+            label="Projects"
+            isActive={activeSection === "projects"}
+            onClick={() => handleSectionChange("projects")}
+          />
+          <IconButton
+            Icon={SiGooglechat}
+            label="Blog"
+            isActive={activeSection === "blog"}
+            onClick={() => handleSectionChange("blog")}
+          />
+          <IconButton
+            Icon={FaEnvelope}
+            label="Contact"
+            isActive={activeSection === "contact"}
+            onClick={() => handleSectionChange("contact")}
+          />
         </div>
         {/* ======= Other Icons End */}
       </div>
-      {/* ================= Left Icons Start here ====================== */}
-      <div className="w-full lgl:w-[94%] h-full flex flex-col gap-6 lgl:gap-0 lgl:flex-row items-center">
-        {/* ======================== Home Left Start here ============================ */}
-        <Left />
-        {/* ======================== Home Left End here ============================== */}
-        <div className="w-full lgl:w-8/12 h-[95%] bg-bodyColor rounded-2xl flex justify-center items-center">
-          {/* ======================== Smaller device content Start ======================== */}
-          <div className="w-full h-full lgl:hidden bg-transparent rounded-2xl flex flex-col gap-6">
-            <About />
-            <Resume />
-            <Projects />
-            <Blog />
-            <Contact />
-          </div>
-          {/* ======================== Smaller device content End ========================== */}
-          <div className="w-full h-[96%] hidden lgl:flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-[#646464]">
-            {about && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <About />
-              </motion.div>
-            )}
+      {/* ================= Left Icons End here ======================== */}
 
-            {resume && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Resume />
-              </motion.div>
-            )}
-            {projects && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Projects />
-              </motion.div>
-            )}
-            {blog && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Blog />
-              </motion.div>
-            )}
-            {contact && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Contact />
-              </motion.div>
-            )}
+      {/* ======================== Home Content Start here ============================ */}
+      <div className="w-full lgl:w-[94%] h-full flex flex-col gap-6 lgl:gap-0 lgl:flex-row items-center">
+        <Left />
+        <div className="w-full lgl:w-8/12 h-[95%] bg-bodyColor rounded-2xl flex justify-center items-center">
+          <div className="w-full h-full lgl:hidden bg-transparent rounded-2xl flex flex-col gap-6">
+            <Suspense fallback={<Loader></Loader>}>
+              <About />
+              <Resume />
+              <Projects />
+              <Blog />
+              <Contact />
+            </Suspense>
+          </div>
+          <div className="w-full h-[96%] hidden lgl:flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-[#646464]">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Suspense fallback={<Loader />}>
+                {sections[activeSection]}
+              </Suspense>
+            </motion.div>
           </div>
         </div>
       </div>
+      {/* ======================== Home Content End here ============================== */}
     </div>
   );
 };

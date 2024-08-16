@@ -1,10 +1,10 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 import { BsCloudLightningFill } from "react-icons/bs";
 import CV from "../../assets/Kristen-cv.pdf";
 import { useAboutData } from "../../context/about_data";
 import { useSocialLinks } from "../../context/socail_link";
-import * as ReactIcons from "react-icons/fa"; // Import all icons from Font Awesome
+import * as ReactIcons from "react-icons/fa";
 import Loader from "../loader/loader";
 
 const Left = () => {
@@ -22,6 +22,35 @@ const Left = () => {
     deleteSpeed: 20,
     delaySpeed: 2000,
   });
+
+  const socialIcons = useMemo(() => {
+    return socialLinks?.map((link) => {
+      if (link.name.toLowerCase() === "mail") {
+        return (
+          <span
+            key={link._id}
+            className="hover:text-designColor duration-300 cursor-pointer text-xl"
+          >
+            <a href={link.link}>
+              <ReactIcons.FaEnvelope />
+            </a>
+          </span>
+        );
+      } else {
+        const IconComponent = ReactIcons[link.icon.replace(/[<>/]/g, "")];
+        return (
+          <span
+            key={link._id}
+            className="hover:text-designColor duration-300 cursor-pointer text-xl"
+          >
+            <a href={link.link} target="_blank" rel="noopener noreferrer">
+              <IconComponent />
+            </a>
+          </span>
+        );
+      }
+    });
+  }, [socialLinks]);
 
   if (isLoading || isSocialLoading || !aboutData || !socialLinks) {
     return <Loader />;
@@ -46,39 +75,7 @@ const Left = () => {
             {text}
             <Cursor cursorBlinking={false} cursorStyle="|" />
           </p>
-          <div className="flex justify-center gap-2 mt-2">
-            {socialLinks.map((link) => {
-              if (link.name.toLowerCase() === "mail") {
-                return (
-                  <span
-                    key={link._id}
-                    className="hover:text-designColor duration-300 cursor-pointer text-xl"
-                  >
-                    <a href={link.link}>
-                      <ReactIcons.FaEnvelope />
-                    </a>
-                  </span>
-                );
-              } else {
-                const IconComponent =
-                  ReactIcons[link.icon.replace(/[<>/]/g, "")]; // Remove "<", ">", and "/" from the icon name
-                return (
-                  <span
-                    key={link._id}
-                    className="hover:text-designColor duration-300 cursor-pointer text-xl"
-                  >
-                    <a
-                      href={link.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <IconComponent />
-                    </a>
-                  </span>
-                );
-              }
-            })}
-          </div>
+          <div className="flex justify-center gap-2 mt-2">{socialIcons}</div>
         </div>
         <div className="flex h-14">
           <a
@@ -92,7 +89,7 @@ const Left = () => {
             </button>
           </a>
           <a
-            href={`mailto:kuushwaha33ravi@gmail.com`}
+            href={`mailto:${aboutData.email}`}
             className="w-1/2 border-t-[1px] border-t-zinc-800 text-sm tracking-wide uppercase flex justify-center items-center gap-2 hover:text-designColor duration-300"
           >
             <button className="w-full h-full flex justify-center items-center gap-2">

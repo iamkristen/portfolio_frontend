@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import axios from "axios";
 import { FiSend } from "react-icons/fi";
+import { ImSpinner2 } from "react-icons/im"; // Import spinner icon
 import Title from "../home/Title";
 import { useContactData } from "../../context/contact";
 
@@ -11,82 +12,79 @@ const Contact = () => {
     phone,
     freelance,
     openTo,
-  } = useContactData(); // Access contact data from context
+  } = useContactData();
 
-  const [clientName, setClientName] = useState("");
-  const [inputEmail, setInputEmail] = useState("");
-  const [messages, setMessages] = useState("");
-  const [errClientName, setErrClientName] = useState(false);
-  const [errEmail, setErrEmail] = useState(false);
-  const [errMessages, setErrMessage] = useState(false);
+  const [formData, setFormData] = useState({
+    clientName: "",
+    inputEmail: "",
+    messages: "",
+  });
+
+  const [errors, setErrors] = useState({
+    clientName: false,
+    inputEmail: false,
+    messages: false,
+  });
+
   const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
-  const EmailValidation = (inputEmail) => {
+  const emailValidation = useCallback((inputEmail) => {
     return String(inputEmail)
       .toLowerCase()
       .match(/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/);
-  };
+  }, []);
 
-  const handleName = (e) => {
-    setClientName(e.target.value);
-    setErrClientName(false);
-  };
-
-  const handleEmail = (e) => {
-    setInputEmail(e.target.value);
-    setErrEmail(false);
-  };
-
-  const handleMessages = (e) => {
-    setMessages(e.target.value);
-    setErrMessage(false);
-  };
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: false }));
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
-    if (!clientName) {
-      setErrClientName(true);
+    const { clientName, inputEmail, messages } = formData;
+
+    const newErrors = {
+      clientName: !clientName,
+      inputEmail: !inputEmail || !emailValidation(inputEmail),
+      messages: !messages,
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      setLoading(false); // Stop loading on validation error
+      return;
     }
 
-    if (!inputEmail) {
-      setErrEmail(true);
-    } else {
-      if (!EmailValidation(inputEmail)) {
-        setErrEmail(true);
-      }
-    }
-
-    if (!messages) {
-      setErrMessage(true);
-    }
-
-    if (clientName && inputEmail && EmailValidation(inputEmail) && messages) {
-      try {
-        const response = await axios.post(
-          process.env.REACT_APP_API_URL + "api/mailbox/add",
-          {
-            fullName: clientName,
-            email: inputEmail,
-            message: messages,
-          }
-        );
-
-        if (response.data.success) {
-          setSuccessMsg(
-            `Hello ${clientName}, your message has been sent successfully. Thank you for contacting us!`
-          );
-
-          setClientName("");
-          setInputEmail("");
-          setMessages("");
-        } else {
-          console.error("Failed to send message:", response.data.error);
-          // Handle error cases if needed
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_API_URL + "api/mailbox/add",
+        {
+          fullName: clientName,
+          email: inputEmail,
+          message: messages,
         }
-      } catch (error) {
-        console.error("Error sending message:", error);
+      );
+
+      if (response.data.success) {
+        setSuccessMsg(
+          `Hello ${clientName}, your message has been sent successfully. Thank you for contacting us!`
+        );
+        setFormData({ clientName: "", inputEmail: "", messages: "" });
+      } else {
+        setErrorMsg("Failed to send the message. Please try again later.");
+        console.error("Failed to send message:", response.data.error);
       }
+    } catch (error) {
+      setErrorMsg("Error sending message. Please try again later.");
+      console.error("Error sending message:", error);
+    } finally {
+      setLoading(false); // Stop loading after request is complete
     }
   };
 
@@ -136,18 +134,14 @@ const Contact = () => {
             {successMsg}
           </p>
         ) : (
-          <form
-            id="form"
-            action="https://getform.io/f/e18ee560-5133-4cfe-9a48-eddb6f012a9f"
-            method="POST"
-            className="p-6 flex flex-col gap-6"
-          >
+          <form className="p-6 flex flex-col gap-6">
             <div className="w-full flex flex-col lgl:flex-row gap-4 lgl:gap-10 justify-between">
               <input
-                onChange={handleName}
-                value={clientName}
+                name="clientName"
+                onChange={handleChange}
+                value={formData.clientName}
                 className={`${
-                  errClientName
+                  errors.clientName
                     ? "border-red-600 focus-visible:border-red-600"
                     : "border-zinc-600 focus-visible:border-designColor"
                 } w-full bg-transparent border-2 px-4 py-2 text-base text-gray-200 outline-none duration-300`}
@@ -155,10 +149,11 @@ const Contact = () => {
                 placeholder="Full Name"
               />
               <input
-                onChange={handleEmail}
-                value={inputEmail}
+                name="inputEmail"
+                onChange={handleChange}
+                value={formData.inputEmail}
                 className={`${
-                  errEmail
+                  errors.inputEmail
                     ? "border-red-600 focus-visible:border-red-600"
                     : "border-zinc-600 focus-visible:border-designColor"
                 } w-full bg-transparent border-2 px-4 py-2 text-base text-gray-200 outline-none duration-300`}
@@ -167,24 +162,36 @@ const Contact = () => {
               />
             </div>
             <textarea
-              onChange={handleMessages}
-              value={messages}
+              name="messages"
+              onChange={handleChange}
+              value={formData.messages}
               className={`${
-                errMessages
+                errors.messages
                   ? "border-red-600 focus-visible:border-red-600"
                   : "border-zinc-600 focus-visible:border-designColor"
               } w-full bg-transparent border-2 px-4 py-2 text-base text-gray-200 outline-none duration-300 resize-none`}
               placeholder="Your Message"
               rows="4"
             ></textarea>
+            {errorMsg && <p className="text-red-500">{errorMsg}</p>}
             <button
               onClick={handleSend}
-              className="text-base w-44 flex items-center gap-1 text-gray-200 hover:text-designColor duration-200"
+              className="text-base w-44 flex items-center gap-2 justify-center text-gray-200 hover:text-designColor duration-200"
+              disabled={loading} // Disable button while loading
             >
-              Send Message{" "}
-              <span className="mt-1 text-designColor">
-                <FiSend />
-              </span>
+              {loading ? (
+                <>
+                  <ImSpinner2 className="animate-spin" /> {/* Spinner icon */}
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Send Message{" "}
+                  <span className="mt-1 text-designColor">
+                    <FiSend />
+                  </span>
+                </>
+              )}
             </button>
           </form>
         )}

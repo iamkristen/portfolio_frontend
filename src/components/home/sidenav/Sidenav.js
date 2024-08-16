@@ -1,5 +1,5 @@
-import React from 'react'
-import SidenavTitle from './SidenavTitle';
+import React from "react";
+import SidenavTitle from "./SidenavTitle";
 
 const Sidenav = () => {
   return (
@@ -34,6 +34,6 @@ const Sidenav = () => {
       </ul>
     </div>
   );
-}
+};
 
-export default Sidenav
+export default Sidenav;

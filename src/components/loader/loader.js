@@ -1,14 +1,10 @@
 import React from "react";
-import "../../custom_CSS/loader.css";
-import logo from "../../assets/logo.png";
+import styles from "../../custom_CSS/loader.module.css"; // Ensure the correct path and module.css extension
 
 const Loader = () => {
   return (
-    <div className="loader">
-      <div className="logo-container">
-        <img src={logo} alt="Logo" className="logo-image" />
-      </div>
-      <p className="loading-text">Loading...</p>
+    <div className={styles.loader}>
+      <p className={styles.loadingText}>Loading...</p>
     </div>
   );
 };

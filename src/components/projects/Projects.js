@@ -1,18 +1,22 @@
-// Projects.js
 import React from "react";
 import { useProjectsData } from "../../context/project";
 import Title from "../home/Title";
 import ProjectsCard from "./ProjectsCard";
+import Loader from "../loader/loader"; // Import Loader component
 
 const Projects = () => {
   const { projectsData, isLoading } = useProjectsData();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (!projectsData || projectsData.length === 0) {
-    return <div>No projects found.</div>;
+    return (
+      <div className="text-center text-gray-500">
+        No projects available at the moment.
+      </div>
+    );
   }
 
   return (

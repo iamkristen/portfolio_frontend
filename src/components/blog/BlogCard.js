@@ -26,4 +26,4 @@ const BlogCard = ({ image, title, subTitle, category, blogId }) => {
   );
 };
 
-export default BlogCard;
+export default React.memo(BlogCard);

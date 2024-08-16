@@ -16,4 +16,4 @@ const FunFact = () => {
   );
 };
 
-export default FunFact;
+export default React.memo(FunFact);
