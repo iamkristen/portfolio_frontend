@@ -28,18 +28,13 @@ const Skills = () => {
   };
 
   const renderSkills = (type, skills) => (
-    <div key={type} className="mb-8">
+    <div key={type} className="mb-4">
       <ResumeTitle title={type} icon={typeIcons[type]} />
-      <div className="py-4">
+      <div className="py-2">
         {skills.map((skill, index) => (
-          <div
-            key={skill._id}
-            className={`py-3 border-b-[1px] border-zinc-800 ${
-              index !== 0 ? "mt-4" : ""
-            }`}
-          >
-            <p className="text-base text-textColor -mb-1.5">{skill.title}</p>
-            <span className="w-full bg-zinc-600 h-1 inline-flex relative">
+          <div key={skill._id} className={`py-2 ${index !== 0 ? "mt-2" : ""}`}>
+            <p className="text-base text-textColor mb-1">{skill.title}</p>
+            <span className="w-full bg-gray-600 h-1 inline-flex relative">
               <span
                 style={{
                   width:
@@ -60,22 +55,24 @@ const Skills = () => {
   );
 
   return (
-    <div className="w-full grid grid-cols-9 gap-10 lgl:gap-0 px-6">
-      <div className="col-span-9 md:col-span-4 pr-8">
-        {groupedSkills.Framework &&
-          renderSkills("Framework", groupedSkills.Framework)}
-        <div className="my-4 w-full border-t-2 border-zinc-700"></div>
-        {groupedSkills.Knowledge &&
-          renderSkills("Knowledge", groupedSkills.Knowledge)}
-      </div>
-      <div className="hidden md:block col-span-1">
-        <div className="w-full h-full border-l-2 border-zinc-800"></div>
-      </div>
-      <div className="col-span-9 md:col-span-4 pl-0">
-        {groupedSkills.Languages &&
-          renderSkills("Languages", groupedSkills.Languages)}
-        <div className="my-4 w-full border-t-2 border-zinc-700"></div>
-        {groupedSkills.Coding && renderSkills("Coding", groupedSkills.Coding)}
+    <div className="w-full px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="col-span-1">
+          {groupedSkills.Framework &&
+            renderSkills("Framework", groupedSkills.Framework)}
+          <div className="w-full border-t-2 border-gray-300 my-8"></div>
+          {groupedSkills.Knowledge &&
+            renderSkills("Knowledge", groupedSkills.Knowledge)}
+        </div>
+        {/* <div className="hidden md:block col-span-1">
+          <div className="h-full border-l-2 border-gray-300"></div>
+        </div> */}
+        <div className="col-span-1">
+          {groupedSkills.Coding && renderSkills("Coding", groupedSkills.Coding)}
+          <div className="w-full border-t-2 border-gray-300 my-8"></div>
+          {groupedSkills.Languages &&
+            renderSkills("Languages", groupedSkills.Languages)}
+        </div>
       </div>
     </div>
   );
