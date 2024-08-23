@@ -12,6 +12,7 @@ const Education = () => {
   const { experienceData, isLoading: isExperienceLoading } =
     useExperienceData();
 
+  // Show loader if any data is still loading
   if (isEducationLoading || isExperienceLoading) {
     return <Loader />;
   }
@@ -26,7 +27,7 @@ const Education = () => {
             badge={experience.timePeriod}
             title={experience.title}
             subTitle={experience.company}
-            des={experience.description}
+            des={experience.description} // `des` might be undefined initially
           />
         ))}
       </div>
@@ -41,7 +42,7 @@ const Education = () => {
             badge={education.timePeriod}
             title={education.title}
             subTitle={education.location}
-            des={education.description}
+            des={education.description} // Handle undefined description
           />
         ))}
       </div>

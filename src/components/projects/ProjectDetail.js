@@ -22,7 +22,7 @@ const ProjectDetailPage = () => {
   }
 
   return (
-    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50  items-center justify-center">
       <div className="bg-bodyColor rounded-lg shadow-lg max-w-4xl mx-auto">
         <div className="p-2">
           <img

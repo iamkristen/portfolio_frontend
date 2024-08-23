@@ -1,24 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ResumeCard = ({ badge, title, subTitle, des }) => {
-  const defaultBadge = "2013-Present";
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // If des is undefined, use an empty string to avoid errors
+  const description = des || "";
+
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // Determine whether to show truncated or full description
+  const truncatedDescription =
+    description.length > 0 ? description.slice(0, 0) + ">" : description;
 
   return (
-    <div className="w-full py-6 flex flex-col gap-2.5 border-b-[1px] border-b-zinc-800">
-      <h6
-        className={`w-24 text-center text-sm py-[1px] border-[1px] rounded-sm ${
-          badge
-            ? "text-[#999] border-zinc-600"
-            : "text-designColor border-designColor"
-        }`}
-      >
-        {badge || defaultBadge}
-      </h6>
-      <h2 className="text-lg font-titleFont text-gray-200 font-medium">
-        {title}
-      </h2>
-      <p className="text-sm text-[#999] -mt-2">{subTitle}</p>
-      <p className="text-base text-[#999] font-medium pr-10">{des}</p>
+    <div className="mb-4">
+      <div className="flex items-center">
+        <span className="text-gray-500">{badge}</span>
+      </div>
+      <div className="text-l font-semibold">{title}</div>
+      <div className="text-md font-semibold text-gray-500">{subTitle}</div>
+      <p className="text-gray-400 mt-2">
+        {isExpanded ? description : truncatedDescription}
+        {description.length > 0 && (
+          <span onClick={toggleExpansion} className="text-white cursor-pointer">
+            {isExpanded ? (
+              <>
+                <br />
+                --- Hide Description ---
+              </>
+            ) : (
+              "Show Description"
+            )}
+          </span>
+        )}
+      </p>
+      <div className="w-full border-t border-silver mt-4"></div>
     </div>
   );
 };
