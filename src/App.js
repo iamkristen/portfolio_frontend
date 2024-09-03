@@ -3,11 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Providers from "./providers/providers";
 import Loader from "./components/loader/loader";
 
-const RoundOne = lazy(() => import("./components/roundDesigns/RoundOne"));
-const RoundTwo = lazy(() => import("./components/roundDesigns/RoundTwo"));
-const RoundThree = lazy(() => import("./components/roundDesigns/RoundThree"));
-const RoundFour = lazy(() => import("./components/roundDesigns/RoundFour"));
-const RoundFive = lazy(() => import("./components/roundDesigns/RoundFive"));
+// Lazy loading components
+const RoundOne = memo(lazy(() => import("./components/roundDesigns/RoundOne")));
+const RoundTwo = memo(lazy(() => import("./components/roundDesigns/RoundTwo")));
+const RoundThree = memo(
+  lazy(() => import("./components/roundDesigns/RoundThree"))
+);
+const RoundFour = memo(
+  lazy(() => import("./components/roundDesigns/RoundFour"))
+);
+const RoundFive = memo(
+  lazy(() => import("./components/roundDesigns/RoundFive"))
+);
 const Home = lazy(() => import("./Home"));
 const ProjectDetail = lazy(() => import("./components/projects/ProjectDetail"));
 const BlogDetailPage = lazy(() => import("./components/blog/blogdetails"));
@@ -24,33 +31,41 @@ const BackgroundShapes = memo(() => (
 
 function App() {
   const onRenderCallback = useCallback((id, phase, actualDuration) => {
-    console.log({ id, phase, actualDuration });
+    if (process.env.NODE_ENV === "development") {
+      console.log({ id, phase, actualDuration });
+    }
   }, []);
 
-  return (
-    <Profiler id="App" onRender={onRenderCallback}>
-      <Router>
-        <Providers>
-          <div className="w-full lgl:h-screen font-bodyfont overflow-hidden text-textColor bg-black relative">
-            <div className="max-w-screen-2xl h-full mx-auto flex justify-center items-center">
-              <Suspense fallback={<Loader />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route
-                    path="/projects/:projectId"
-                    element={<ProjectDetail />}
-                  />
-                  <Route path="/blogs/:blogId" element={<BlogDetailPage />} />
-                </Routes>
-              </Suspense>
-            </div>
-            <Suspense fallback={null}>
-              <BackgroundShapes />
+  const AppContent = (
+    <Router>
+      <Providers>
+        <div className="w-full lgl:h-screen font-bodyfont overflow-hidden text-textColor bg-black relative">
+          <div className="max-w-screen-2xl h-full mx-auto flex justify-center items-center">
+            <Suspense fallback={<Loader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route
+                  path="/projects/:projectId"
+                  element={<ProjectDetail />}
+                />
+                <Route path="/blogs/:blogId" element={<BlogDetailPage />} />
+              </Routes>
             </Suspense>
           </div>
-        </Providers>
-      </Router>
+          <Suspense fallback={null}>
+            <BackgroundShapes />
+          </Suspense>
+        </div>
+      </Providers>
+    </Router>
+  );
+
+  return process.env.NODE_ENV === "development" ? (
+    <Profiler id="App" onRender={onRenderCallback}>
+      {AppContent}
     </Profiler>
+  ) : (
+    AppContent
   );
 }
 
