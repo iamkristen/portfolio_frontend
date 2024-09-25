@@ -39,9 +39,15 @@ const Home = () => {
     "about"
   );
   const [sidenav, setSidenav] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const sidenavRef = useRef();
 
-  const [isPending, startTransition] = useTransition();
+  const aboutRef = useRef();
+  const resumeRef = useRef();
+  const projectsRef = useRef();
+  const blogRef = useRef();
+  const contactRef = useRef();
 
   // Context hooks to fetch data when needed
   const { fetchData: fetchAboutData } = useAboutData();
@@ -67,32 +73,90 @@ const Home = () => {
     };
   }, []);
 
-  // Fetch data for the about section by default and for the selected section
+  // Detect if the user is on a mobile device
   useEffect(() => {
-    // Always load the about data first
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768); // Adjust the width as per your design
+    };
+
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
+
+  // Load "About" data first for both desktop and mobile
+  useEffect(() => {
     fetchAboutData();
 
-    // Then load data for the initially selected section
-    switch (activeSection) {
-      case "projects":
-        fetchProjectsData();
-        break;
-      case "resume":
-        fetchEducationData();
-        fetchExperienceData();
-        fetchSkillsData();
-        break;
-      case "blog":
-        fetchBlogsData();
-        break;
-      case "contact":
-        fetchContactData();
-        break;
-      default:
-        break;
+    if (!isMobile) {
+      // For desktop, also load the selected section data
+      switch (activeSection) {
+        case "resume":
+          fetchEducationData();
+          fetchExperienceData();
+          fetchSkillsData();
+          break;
+        case "projects":
+          fetchProjectsData();
+          break;
+        case "blog":
+          fetchBlogsData();
+          break;
+        case "contact":
+          fetchContactData();
+          break;
+        default:
+          break;
+      }
     }
   }, [
     activeSection,
+    isMobile,
+    fetchAboutData,
+    fetchProjectsData,
+    fetchBlogsData,
+    fetchContactData,
+    fetchEducationData,
+    fetchExperienceData,
+    fetchSkillsData,
+  ]);
+
+  // Set up IntersectionObserver to load sections on scroll for mobile
+  useEffect(() => {
+    if (isMobile) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const section = entry.target.getAttribute("data-section");
+              if (section === "about") fetchAboutData();
+
+              if (section === "resume") {
+                fetchEducationData();
+                fetchExperienceData();
+                fetchSkillsData();
+              }
+              if (section === "projects") fetchProjectsData();
+              if (section === "blog") fetchBlogsData();
+              if (section === "contact") fetchContactData();
+            }
+          });
+        },
+        { threshold: 0.1 } // Adjust the threshold as needed
+      );
+
+      // Observe each section only if it exists in the DOM
+      if (aboutRef.current) observer.observe(aboutRef.current);
+      if (projectsRef.current) observer.observe(projectsRef.current);
+      if (resumeRef.current) observer.observe(resumeRef.current);
+      if (blogRef.current) observer.observe(blogRef.current);
+      if (contactRef.current) observer.observe(contactRef.current);
+
+      return () => observer.disconnect();
+    }
+  }, [
+    isMobile,
     fetchAboutData,
     fetchProjectsData,
     fetchBlogsData,
@@ -106,26 +170,29 @@ const Home = () => {
     startTransition(() => {
       setActiveSection(section);
       // Trigger data fetching based on the active section
-      switch (section) {
-        case "about":
-          fetchAboutData();
-          break;
-        case "projects":
-          fetchProjectsData();
-          break;
-        case "resume":
-          fetchEducationData();
-          fetchExperienceData();
-          fetchSkillsData();
-          break;
-        case "blog":
-          fetchBlogsData();
-          break;
-        case "contact":
-          fetchContactData();
-          break;
-        default:
-          break;
+      if (!isMobile) {
+        switch (section) {
+          case "about":
+            fetchAboutData();
+            break;
+          case "resume":
+            fetchEducationData();
+            fetchExperienceData();
+            fetchSkillsData();
+            break;
+          case "projects":
+            fetchProjectsData();
+            break;
+
+          case "blog":
+            fetchBlogsData();
+            break;
+          case "contact":
+            fetchContactData();
+            break;
+          default:
+            break;
+        }
       }
     });
     setSidenav(false); // Close sidenav after selecting a section
@@ -145,7 +212,7 @@ const Home = () => {
       <div className="w-16 h-96 bg-transparent hidden lgl:flex flex-col gap-4">
         {/* ======= Home Icon start */}
         <div
-          onClick={() => setSidenav(true)}
+          onClick={() => setSidenav(false)}
           className="w-full h-20 bg-bodyColor rounded-3xl flex justify-center items-center cursor-pointer group"
         >
           <div className="flex flex-col gap-1.5 overflow-hidden">
@@ -221,11 +288,28 @@ const Home = () => {
       <div className="w-full lgl:w-[94%] h-full flex flex-col gap-6 lgl:gap-0 lgl:flex-row items-center">
         <Left />
         <div className="w-full lgl:w-8/12 h-[95%] bg-bodyColor rounded-2xl flex justify-center items-center">
+          {/* Mobile view with all sections stacked */}
           <div className="w-full h-full lgl:hidden bg-transparent rounded-2xl flex flex-col gap-6">
             <Suspense fallback={<Loader></Loader>}>
-              {isPending ? <Loader /> : sections[activeSection]}
+              <div ref={aboutRef} data-section="about">
+                {sections["about"]}
+              </div>
+
+              <div ref={resumeRef} data-section="resume">
+                {sections["resume"]}
+              </div>
+              <div ref={projectsRef} data-section="projects">
+                {sections["projects"]}
+              </div>
+              <div ref={blogRef} data-section="blog">
+                {sections["blog"]}
+              </div>
+              <div ref={contactRef} data-section="contact">
+                {sections["contact"]}
+              </div>
             </Suspense>
           </div>
+          {/* Desktop view with active section */}
           <div className="w-full h-[96%] hidden lgl:flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-[#646464]">
             <motion.div
               initial={{ opacity: 0 }}
