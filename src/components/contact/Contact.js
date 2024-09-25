@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { FiSend } from "react-icons/fi";
 import { ImSpinner2 } from "react-icons/im"; // Import spinner icon
@@ -6,13 +6,7 @@ import Title from "../home/Title";
 import { useContactData } from "../../context/contact";
 
 const Contact = () => {
-  const {
-    address,
-    email: contactEmail,
-    phone,
-    freelance,
-    openTo,
-  } = useContactData();
+  const { contactData, fetchData, isLoading, error } = useContactData();
 
   const [formData, setFormData] = useState({
     clientName: "",
@@ -29,6 +23,10 @@ const Contact = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false); // Loading state
+
+  useEffect(() => {
+    fetchData(); // Fetch contact data when the component mounts
+  }, [fetchData]);
 
   const emailValidation = useCallback((inputEmail) => {
     return String(inputEmail)
@@ -57,7 +55,7 @@ const Contact = () => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some((error) => error)) {
-      setLoading(false); // Stop loading on validation error
+      setLoading(false);
       return;
     }
 
@@ -84,9 +82,25 @@ const Contact = () => {
       setErrorMsg("Error sending message. Please try again later.");
       console.error("Error sending message:", error);
     } finally {
-      setLoading(false); // Stop loading after request is complete
+      setLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full text-center">
+        <ImSpinner2 className="animate-spin text-4xl text-designColor" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full text-center text-red-500">
+        Error loading contact information.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -97,13 +111,13 @@ const Contact = () => {
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Address
             </span>
-            {address}
+            {contactData.address}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Phone
             </span>
-            {phone}
+            {contactData.phone}
           </p>
         </div>
         <div className="w-full lgl:w-1/2">
@@ -111,19 +125,19 @@ const Contact = () => {
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Email
             </span>
-            {contactEmail}
+            {contactData.email}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Freelance
             </span>
-            {freelance}
+            {contactData.freelance}
           </p>
           <p className="flex justify-between w-full text-lg text-[#ccc] py-4 border-b-[1px] border-b-zinc-800">
             <span className="bg-designColor text-gray-700 text-sm font-titleFont font-medium px-2 rounded-md flex items-center justify-center">
               Open to
             </span>
-            {openTo}
+            {contactData.openTo}
           </p>
         </div>
       </div>
@@ -181,7 +195,7 @@ const Contact = () => {
             >
               {loading ? (
                 <>
-                  <ImSpinner2 className="animate-spin" /> {/* Spinner icon */}
+                  <ImSpinner2 className="animate-spin" />
                   Sending...
                 </>
               ) : (

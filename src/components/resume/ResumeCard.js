@@ -3,16 +3,14 @@ import React, { useState } from "react";
 const ResumeCard = ({ badge, title, subTitle, des }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // If des is undefined, use an empty string to avoid errors
-  const description = des || "";
+  const description = des || ""; // Use an empty string if description is undefined
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Determine whether to show truncated or full description
   const truncatedDescription =
-    description.length > 0 ? description.slice(0, 0) + ">" : description;
+    description.length > 0 ? description.slice(0, 100) + "..." : description;
 
   return (
     <div className="mb-4">

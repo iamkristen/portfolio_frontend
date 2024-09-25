@@ -4,7 +4,7 @@ import { SiArtstation } from "react-icons/si";
 import { FaFlag } from "react-icons/fa";
 import { BiCodeAlt } from "react-icons/bi";
 import { IoIosPaper } from "react-icons/io";
-import { useSkillsData } from "./../../context/skill";
+import { useSkillsData } from "../../context/skill";
 import Loader from "../loader/loader";
 
 const Skills = () => {
@@ -64,9 +64,6 @@ const Skills = () => {
           {groupedSkills.Knowledge &&
             renderSkills("Knowledge", groupedSkills.Knowledge)}
         </div>
-        {/* <div className="hidden md:block col-span-1">
-          <div className="h-full border-l-2 border-gray-300"></div>
-        </div> */}
         <div className="col-span-1">
           {groupedSkills.Coding && renderSkills("Coding", groupedSkills.Coding)}
           <div className="w-full border-t-2 border-gray-300 my-8"></div>

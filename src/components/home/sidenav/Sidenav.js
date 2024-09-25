@@ -1,36 +1,53 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import SidenavTitle from "./SidenavTitle";
+import { useBlogsData } from "../../../context/blog";
+import { useProjectsData } from "../../../context/project";
 
 const Sidenav = () => {
+  const { blogsData } = useBlogsData();
+  const { projectsData } = useProjectsData();
+
   return (
     <div className="px-7 py-4">
-      <SidenavTitle title="M" subTitle="enu" />
+      {/* <SidenavTitle title="M" subTitle="enu" />
       <ul>
-        <li className="sidenavLi">Blog Page</li>
-        <li className="sidenavLi">Portfolio Page</li>
-      </ul>
-      <SidenavTitle title="P" subTitle="rojects" />
+        {aboutData && <li className="sidenavLi">{aboutData.name}</li>}
+        <li className="sidenavLi">
+          <Link to="/portfolio">Portfolio Page</Link>
+        </li>
+      </ul> */}
+
+      <SidenavTitle title="L" subTitle="atest Projects" />
       <ul>
-        <li className="sidenavLi">Web Development</li>
-        <li className="sidenavLi">E-commerce</li>
-        <li className="sidenavLi">Chatting Applications</li>
-        <li className="sidenavLi">Portfolio Websites</li>
-        <li className="sidenavLi">Backend Setup</li>
-        <li className="sidenavLi">Amazon Clone</li>
+        {projectsData &&
+          projectsData.slice(0, 4).map((project, index) => (
+            <li key={index} className="sidenavLi">
+              <Link to={`/projects/${project._id}`}>{project.title}</Link>
+            </li>
+          ))}
       </ul>
+
       <SidenavTitle title="L" subTitle="atest Posts" />
       <ul>
-        <li className="sidenavLi">UI & UX Conference at Lviv 2022</li>
-        <li className="sidenavLi">How to become a creative designer</li>
-        <li className="sidenavLi">
-          Designers thoughts about mobile UI templates
-        </li>
-        <li className="sidenavLi">Designer Conference at Florida, USA 2020</li>
+        {blogsData &&
+          blogsData.slice(0, 4).map((post, index) => (
+            <li key={index} className="sidenavLi">
+              <Link to={`/blogs/${post._id}`}>{post.title}</Link>
+            </li>
+          ))}
       </ul>
+
       <SidenavTitle title="R" subTitle="each Me" />
       <ul>
-        <li className="sidenavLi">+968 24769821</li>
-        <li className="sidenavLi">noor.jsdivs@gmail.com</li>
+        <li className="sidenavLi">
+          <a href="tel:+447810378238">+447810378238</a>
+        </li>
+        <li className="sidenavLi">
+          <a href="mailto:kuushwaha33ravi@gmail.com">
+            kuushwaha33ravi@gmail.com
+          </a>
+        </li>
       </ul>
     </div>
   );

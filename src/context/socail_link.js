@@ -12,6 +12,7 @@ export const SocialLinksProvider = ({ children }) => {
   useEffect(() => {
     const fetchSocialLinks = async () => {
       try {
+        console.log("Fetching social links...");
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}api/social/get`
         );

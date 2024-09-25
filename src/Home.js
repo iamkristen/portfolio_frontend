@@ -1,5 +1,11 @@
-// Home.js
-import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+  useTransition,
+} from "react";
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope } from "react-icons/fa";
 import { IoIosPaper } from "react-icons/io";
@@ -10,6 +16,15 @@ import Sidenav from "./components/home/sidenav/Sidenav";
 import IconButton from "./components/button/Iconbutton";
 import usePersistedState from "./usePersistedState";
 import Loader from "./components/loader/loader";
+
+// Hooks to access the contexts
+import { useAboutData } from "./context/about_data";
+import { useProjectsData } from "./context/project";
+import { useBlogsData } from "./context/blog";
+import { useContactData } from "./context/contact";
+import { useEducationData } from "./context/education";
+import { useExperienceData } from "./context/experience";
+import { useSkillsData } from "./context/skill";
 
 // Lazy loading components
 const About = lazy(() => import("./components/about/About"));
@@ -24,25 +39,96 @@ const Home = () => {
     "about"
   );
   const [sidenav, setSidenav] = useState(false);
-  const ref = useRef();
+  const sidenavRef = useRef();
+
+  const [isPending, startTransition] = useTransition();
+
+  // Context hooks to fetch data when needed
+  const { fetchData: fetchAboutData } = useAboutData();
+  const { fetchData: fetchProjectsData } = useProjectsData();
+  const { fetchData: fetchBlogsData } = useBlogsData();
+  const { fetchData: fetchContactData } = useContactData();
+  const { fetchData: fetchEducationData } = useEducationData();
+  const { fetchData: fetchExperienceData } = useExperienceData();
+  const { fetchData: fetchSkillsData } = useSkillsData();
 
   // Handle click outside of the sidenav to close it
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
+      if (sidenavRef.current && !sidenavRef.current.contains(e.target)) {
         setSidenav(false);
       }
     };
 
-    document.body.addEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.body.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // Fetch data for the about section by default and for the selected section
+  useEffect(() => {
+    // Always load the about data first
+    fetchAboutData();
+
+    // Then load data for the initially selected section
+    switch (activeSection) {
+      case "projects":
+        fetchProjectsData();
+        break;
+      case "resume":
+        fetchEducationData();
+        fetchExperienceData();
+        fetchSkillsData();
+        break;
+      case "blog":
+        fetchBlogsData();
+        break;
+      case "contact":
+        fetchContactData();
+        break;
+      default:
+        break;
+    }
+  }, [
+    activeSection,
+    fetchAboutData,
+    fetchProjectsData,
+    fetchBlogsData,
+    fetchContactData,
+    fetchEducationData,
+    fetchExperienceData,
+    fetchSkillsData,
+  ]);
+
   const handleSectionChange = (section) => {
-    setActiveSection(section);
+    startTransition(() => {
+      setActiveSection(section);
+      // Trigger data fetching based on the active section
+      switch (section) {
+        case "about":
+          fetchAboutData();
+          break;
+        case "projects":
+          fetchProjectsData();
+          break;
+        case "resume":
+          fetchEducationData();
+          fetchExperienceData();
+          fetchSkillsData();
+          break;
+        case "blog":
+          fetchBlogsData();
+          break;
+        case "contact":
+          fetchContactData();
+          break;
+        default:
+          break;
+      }
+    });
+    setSidenav(false); // Close sidenav after selecting a section
   };
 
   const sections = {
@@ -75,7 +161,7 @@ const Home = () => {
           <div className="w-full h-screen fixed top-0 left-0 bg-black bg-opacity-50 z-50">
             <div className="w-96 h-full relative">
               <motion.div
-                ref={ref}
+                ref={sidenavRef}
                 initial={{ x: -500, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
@@ -137,11 +223,7 @@ const Home = () => {
         <div className="w-full lgl:w-8/12 h-[95%] bg-bodyColor rounded-2xl flex justify-center items-center">
           <div className="w-full h-full lgl:hidden bg-transparent rounded-2xl flex flex-col gap-6">
             <Suspense fallback={<Loader></Loader>}>
-              <About />
-              <Resume />
-              <Projects />
-              <Blog />
-              <Contact />
+              {isPending ? <Loader /> : sections[activeSection]}
             </Suspense>
           </div>
           <div className="w-full h-[96%] hidden lgl:flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-[#646464]">
@@ -151,7 +233,7 @@ const Home = () => {
               transition={{ duration: 0.5 }}
             >
               <Suspense fallback={<Loader />}>
-                {sections[activeSection]}
+                {isPending ? <Loader /> : sections[activeSection]}
               </Suspense>
             </motion.div>
           </div>
