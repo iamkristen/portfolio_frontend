@@ -8,7 +8,6 @@ import {
   FaWhatsapp,
   FaLink,
   FaLinkedin,
-  FaInstagram,
 } from "react-icons/fa";
 import Loader from "../loader/loader";
 import Title from "../home/Title";
