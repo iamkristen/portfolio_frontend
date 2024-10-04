@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet"; // Import Helmet
 import axios from "axios";
-import { Helmet } from "react-helmet";
 import {
   FaFacebookF,
   FaTwitter,
@@ -21,7 +21,7 @@ const BlogDetailPage = () => {
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
 
-  const currentUrl = window.location.href; // Get current URL
+  const currentUrl = window.location.href;
 
   useEffect(() => {
     const fetchBlogById = async () => {
@@ -43,7 +43,7 @@ const BlogDetailPage = () => {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(currentUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000); // Reset "Copied" message after 2 seconds
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (isLoading) {
@@ -62,22 +62,25 @@ const BlogDetailPage = () => {
 
   return (
     <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50">
+      {/* Set dynamic meta tags using Helmet */}
       <Helmet>
         <title>{blog.title}</title>
-        <meta name="description" content={blog.description} />
-
-        {/* Open Graph Meta Tags */}
         <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.description} />
+        <meta
+          property="og:description"
+          content={blog.description.substring(0, 150)}
+        />
         <meta property="og:image" content={blog.banner} />
         <meta property="og:url" content={currentUrl} />
         <meta property="og:type" content="article" />
-
-        {/* Twitter Card Meta Tags */}
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.description} />
-        <meta name="twitter:image" content={blog.banner} />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={blog.title} />
+        <meta
+          name="twitter:description"
+          content={blog.description.substring(0, 150)}
+        />
+        <meta name="twitter:image" content={blog.banner} />
+        <meta name="twitter:url" content={currentUrl} />
       </Helmet>
 
       <div className="container mx-auto py-2">
@@ -94,8 +97,6 @@ const BlogDetailPage = () => {
             <div>
               <Title title={blog.title} />
             </div>
-
-            {/* Shareable Links Section */}
             <div className="flex items-center gap-4">
               <button
                 onClick={handleCopyLink}
@@ -105,7 +106,6 @@ const BlogDetailPage = () => {
                 {copied ? "Copied!" : "Copy Link"}
               </button>
 
-              {/* Social Sharing Links */}
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
                 target="_blank"
@@ -115,6 +115,7 @@ const BlogDetailPage = () => {
               >
                 <FaFacebookF className="text-lg" />
               </a>
+
               <a
                 href={`https://www.linkedin.com/shareArticle?mini=true&url=${currentUrl}`}
                 target="_blank"
@@ -124,15 +125,7 @@ const BlogDetailPage = () => {
               >
                 <FaLinkedin className="text-lg" />
               </a>
-              <a
-                href={`https://www.instagram.com/?url=${currentUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white"
-                title="Share on Instagram"
-              >
-                <FaInstagram className="text-lg" />
-              </a>
+
               <a
                 href={`https://twitter.com/intent/tweet?url=${currentUrl}&text=Check out this blog!`}
                 target="_blank"
@@ -142,6 +135,7 @@ const BlogDetailPage = () => {
               >
                 <FaTwitter className="text-lg" />
               </a>
+
               <a
                 href={`https://api.whatsapp.com/send?text=${currentUrl}`}
                 target="_blank"
@@ -152,7 +146,6 @@ const BlogDetailPage = () => {
                 <FaWhatsapp className="text-lg" />
               </a>
 
-              {/* Date */}
               <div className="text-sm text-gray-400 ml-4">{formattedDate}</div>
             </div>
           </div>
