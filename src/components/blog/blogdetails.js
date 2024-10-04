@@ -92,11 +92,12 @@ const BlogDetailPage = () => {
               style={{ aspectRatio: "3 / 2" }}
             />
           </div>
-          <div className="p-6 flex justify-between items-center">
-            <div>
+
+          <div className="p-6 flex flex-wrap justify-between items-center">
+            <div className="w-full sm:w-auto">
               <Title title={blog.title} />
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-4 sm:mt-0 w-full sm:w-auto">
               <button
                 onClick={handleCopyLink}
                 className="text-sm text-gray-400 flex items-center gap-1"
@@ -145,7 +146,9 @@ const BlogDetailPage = () => {
                 <FaWhatsapp className="text-lg" />
               </a>
 
-              <div className="text-sm text-gray-400 ml-4">{formattedDate}</div>
+              <div className="text-sm text-gray-400 mt-2 sm:mt-0">
+                {formattedDate}
+              </div>
             </div>
           </div>
 
