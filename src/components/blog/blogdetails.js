@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 import {
   FaFacebookF,
   FaTwitter,
@@ -18,7 +19,7 @@ const BlogDetailPage = () => {
   const [blog, setBlog] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [copied, setCopied] = useState(false); // State for copied link status
+  const [copied, setCopied] = useState(false);
 
   const currentUrl = window.location.href; // Get current URL
 
@@ -61,6 +62,24 @@ const BlogDetailPage = () => {
 
   return (
     <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50">
+      <Helmet>
+        <title>{blog.title}</title>
+        <meta name="description" content={blog.description} />
+
+        {/* Open Graph Meta Tags */}
+        <meta property="og:title" content={blog.title} />
+        <meta property="og:description" content={blog.description} />
+        <meta property="og:image" content={blog.banner} />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:type" content="article" />
+
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:title" content={blog.title} />
+        <meta name="twitter:description" content={blog.description} />
+        <meta name="twitter:image" content={blog.banner} />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       <div className="container mx-auto py-2">
         <div className="bg-bodyColor rounded-lg shadow-lg max-w-6xl mx-auto">
           <div className="p-2">
@@ -87,7 +106,6 @@ const BlogDetailPage = () => {
               </button>
 
               {/* Social Sharing Links */}
-
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
                 target="_blank"
