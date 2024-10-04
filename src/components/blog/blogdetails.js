@@ -1,53 +1,153 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useBlogsData } from "../../context/blog";
+import axios from "axios";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaWhatsapp,
+  FaLink,
+  FaLinkedin,
+  FaInstagram,
+} from "react-icons/fa";
 import Loader from "../loader/loader";
 import Title from "../home/Title";
 import "../../custom_CSS/rich-text-editor.css";
 
 const BlogDetailPage = () => {
   const { blogId } = useParams();
-  const { blogsData, isLoading } = useBlogsData();
+  const [blog, setBlog] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false); // State for copied link status
+
+  const currentUrl = window.location.href; // Get current URL
+
+  useEffect(() => {
+    const fetchBlogById = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}api/blogs/get/${blogId}`
+        );
+        setBlog(response.data.data);
+      } catch (err) {
+        setError("Failed to load the blog post.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBlogById();
+  }, [blogId]);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(currentUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // Reset "Copied" message after 2 seconds
+  };
 
   if (isLoading) {
     return <Loader />;
   }
 
-  const selectedBlog = blogsData.find((blog) => blog._id === blogId);
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
-  if (!selectedBlog) {
+  if (!blog) {
     return <div className="text-center text-red-500">Blog post not found.</div>;
   }
 
-  const formattedDate = new Date(selectedBlog.createdAt).toLocaleDateString();
+  const formattedDate = new Date(blog.createdAt).toLocaleDateString();
 
   return (
     <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50">
-      <div className="container mx-auto py-8">
-        <div className="bg-bodyColor rounded-lg shadow-lg max-w-4xl mx-auto">
+      <div className="container mx-auto py-2">
+        <div className="bg-bodyColor rounded-lg shadow-lg max-w-6xl mx-auto">
           <div className="p-2">
             <img
-              src={selectedBlog.banner}
-              alt={selectedBlog.title}
+              src={blog.banner}
+              alt={blog.title}
               className="w-full h-64 object-cover object-center rounded-t-lg"
               style={{ aspectRatio: "3 / 2" }}
             />
           </div>
           <div className="p-6 flex justify-between items-center">
             <div>
-              <Title title={selectedBlog.title} />
+              <Title title={blog.title} />
             </div>
-            <div className="text-sm text-gray-400">{formattedDate}</div>
+
+            {/* Shareable Links Section */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleCopyLink}
+                className="text-sm text-gray-400 flex items-center gap-1"
+              >
+                <FaLink className="text-lg text-gray-400" />
+                {copied ? "Copied!" : "Copy Link"}
+              </button>
+
+              {/* Social Sharing Links */}
+
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                title="Share on Facebook"
+              >
+                <FaFacebookF className="text-lg" />
+              </a>
+              <a
+                href={`https://www.linkedin.com/shareArticle?mini=true&url=${currentUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                title="Share on LinkedIn"
+              >
+                <FaLinkedin className="text-lg" />
+              </a>
+              <a
+                href={`https://www.instagram.com/?url=${currentUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                title="Share on Instagram"
+              >
+                <FaInstagram className="text-lg" />
+              </a>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${currentUrl}&text=Check out this blog!`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                title="Share on Twitter"
+              >
+                <FaTwitter className="text-lg" />
+              </a>
+              <a
+                href={`https://api.whatsapp.com/send?text=${currentUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                title="Share on WhatsApp"
+              >
+                <FaWhatsapp className="text-lg" />
+              </a>
+
+              {/* Date */}
+              <div className="text-sm text-gray-400 ml-4">{formattedDate}</div>
+            </div>
           </div>
+
           <div className="p-6">
             <div
               className="rich-text-content"
-              dangerouslySetInnerHTML={{ __html: selectedBlog.description }}
+              dangerouslySetInnerHTML={{ __html: blog.description }}
             />
-            {selectedBlog.link && (
+            {blog.link && (
               <div className="mt-6">
                 <a
-                  href={selectedBlog.link}
+                  href={blog.link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg shadow"
