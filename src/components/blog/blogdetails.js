@@ -61,7 +61,6 @@ const BlogDetailPage = () => {
 
   return (
     <div className="fixed inset-0 overflow-y-auto bg-black bg-opacity-50 z-50">
-      {/* Set dynamic meta tags using Helmet */}
       <Helmet>
         <title>{blog.title}</title>
         <meta property="og:title" content={blog.title} />
@@ -82,8 +81,8 @@ const BlogDetailPage = () => {
         <meta name="twitter:url" content={currentUrl} />
       </Helmet>
 
-      <div className="container mx-auto py-2">
-        <div className="bg-bodyColor rounded-lg shadow-lg max-w-6xl mx-auto">
+      <div className="w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-[76rem] mx-auto py-0 px-0 md:px-4 overflow-hidden">
+        <div className="bg-bodyColor rounded-lg shadow-lg max-w-[75rem] mx-auto">
           <div className="p-2">
             <img
               src={blog.banner}
