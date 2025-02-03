@@ -8,6 +8,7 @@ import { ExperienceDataProvider } from "../context/experience";
 import { ProjectsDataProvider } from "../context/project";
 import { BlogsDataProvider } from "../context/blog";
 import { ContactProvider } from "../context/contact";
+import { CertificatesDataProvider } from "../context/certificate";
 
 const Providers = ({ children }) => (
   <AboutDataProvider>
@@ -17,7 +18,11 @@ const Providers = ({ children }) => (
           <ExperienceDataProvider>
             <ProjectsDataProvider>
               <BlogsDataProvider>
-                <ContactProvider>{children}</ContactProvider>
+                <ContactProvider>
+                  <CertificatesDataProvider>
+                    {children}
+                  </CertificatesDataProvider>
+                </ContactProvider>
               </BlogsDataProvider>
             </ProjectsDataProvider>
           </ExperienceDataProvider>

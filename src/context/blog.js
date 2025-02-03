@@ -11,7 +11,7 @@ export const BlogsDataProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
-    if (blogsData || isLoading) return; // Prevent re-fetching if data is already loaded or currently loading
+    if (blogsData || isLoading) return;
 
     setIsLoading(true);
     try {

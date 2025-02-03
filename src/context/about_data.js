@@ -11,11 +11,11 @@ export const AboutDataProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
-    if (aboutData || isLoading) return; // Prevent re-fetching if data is already loaded or loading
+    if (aboutData || isLoading) return; 
 
     setIsLoading(true);
     try {
-      console.log("Fetching about data...");
+      console.log(`${process.env.REACT_APP_API_URL}api/about-me/get`);
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}api/about-me/get`
       );

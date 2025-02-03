@@ -7,12 +7,12 @@ import React, {
   useTransition,
 } from "react";
 import { motion } from "framer-motion";
-import { FaUser, FaEnvelope } from "react-icons/fa";
+import { FaUser, FaEnvelope,FaCertificate } from "react-icons/fa";
 import { IoIosPaper } from "react-icons/io";
-import { MdWork, MdOutlineClose } from "react-icons/md";
+// import { MdWork, MdOutlineClose } from "react-icons/md";
 import { SiGooglechat } from "react-icons/si";
 import Left from "./components/home/Left";
-import Sidenav from "./components/home/sidenav/Sidenav";
+// import Sidenav from "./components/home/sidenav/Sidenav";
 import IconButton from "./components/button/Iconbutton";
 import usePersistedState from "./usePersistedState";
 import Loader from "./components/loader/loader";
@@ -20,6 +20,7 @@ import Loader from "./components/loader/loader";
 // Hooks to access the contexts
 import { useAboutData } from "./context/about_data";
 import { useProjectsData } from "./context/project";
+import { useCertificatesData } from "./context/certificate";
 import { useBlogsData } from "./context/blog";
 import { useContactData } from "./context/contact";
 import { useEducationData } from "./context/education";
@@ -30,6 +31,7 @@ import { useSkillsData } from "./context/skill";
 const About = lazy(() => import("./components/about/About"));
 const Resume = lazy(() => import("./components/resume/Resume"));
 const Projects = lazy(() => import("./components/projects/Projects"));
+const Certificate = lazy(() => import("./components/certificate/Certificate"));
 const Blog = lazy(() => import("./components/blog/Blog"));
 const Contact = lazy(() => import("./components/contact/Contact"));
 
@@ -38,45 +40,47 @@ const Home = () => {
     "activeSection",
     "about"
   );
-  const [sidenav, setSidenav] = useState(false);
+  // const [sidenav, setSidenav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const sidenavRef = useRef();
+  // const sidenavRef = useRef();
 
   const aboutRef = useRef();
   const resumeRef = useRef();
   const projectsRef = useRef();
+  const certificateRef = useRef();
   const blogRef = useRef();
   const contactRef = useRef();
 
   // Context hooks to fetch data when needed
   const { fetchData: fetchAboutData } = useAboutData();
   const { fetchData: fetchProjectsData } = useProjectsData();
+  const { fetchData: fetchCertificates } = useCertificatesData();
   const { fetchData: fetchBlogsData } = useBlogsData();
   const { fetchData: fetchContactData } = useContactData();
   const { fetchData: fetchEducationData } = useEducationData();
   const { fetchData: fetchExperienceData } = useExperienceData();
   const { fetchData: fetchSkillsData } = useSkillsData();
 
-  // Handle click outside of the sidenav to close it
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (sidenavRef.current && !sidenavRef.current.contains(e.target)) {
-        setSidenav(false);
-      }
-    };
+  // // Handle click outside of the sidenav to close it
+  // useEffect(() => {
+  //   const handleClickOutside = (e) => {
+  //     if (sidenavRef.current && !sidenavRef.current.contains(e.target)) {
+  //       setSidenav(false);
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handleClickOutside);
+  //   document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
-  // Detect if the user is on a mobile device
+
   useEffect(() => {
     const checkIsMobile = () => {
-      setIsMobile(window.innerWidth <= 768); // Adjust the width as per your design
+      setIsMobile(window.innerWidth <= 768);
     };
 
     checkIsMobile();
@@ -85,12 +89,10 @@ const Home = () => {
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
-  // Load "About" data first for both desktop and mobile
   useEffect(() => {
     fetchAboutData();
 
     if (!isMobile) {
-      // For desktop, also load the selected section data
       switch (activeSection) {
         case "resume":
           fetchEducationData();
@@ -99,6 +101,9 @@ const Home = () => {
           break;
         case "projects":
           fetchProjectsData();
+          break;
+        case "certificate":
+          fetchCertificates();
           break;
         case "blog":
           fetchBlogsData();
@@ -115,6 +120,7 @@ const Home = () => {
     isMobile,
     fetchAboutData,
     fetchProjectsData,
+    fetchCertificates,
     fetchBlogsData,
     fetchContactData,
     fetchEducationData,
@@ -138,17 +144,18 @@ const Home = () => {
                 fetchSkillsData();
               }
               if (section === "projects") fetchProjectsData();
+              if (section === "certificate") fetchCertificates();
               if (section === "blog") fetchBlogsData();
               if (section === "contact") fetchContactData();
             }
           });
         },
-        { threshold: 0.1 } // Adjust the threshold as needed
+        { threshold: 0.1 }
       );
 
-      // Observe each section only if it exists in the DOM
       if (aboutRef.current) observer.observe(aboutRef.current);
       if (projectsRef.current) observer.observe(projectsRef.current);
+      if (certificateRef.current) observer.observe(certificateRef.current);
       if (resumeRef.current) observer.observe(resumeRef.current);
       if (blogRef.current) observer.observe(blogRef.current);
       if (contactRef.current) observer.observe(contactRef.current);
@@ -159,6 +166,7 @@ const Home = () => {
     isMobile,
     fetchAboutData,
     fetchProjectsData,
+    fetchCertificates,
     fetchBlogsData,
     fetchContactData,
     fetchEducationData,
@@ -169,7 +177,6 @@ const Home = () => {
   const handleSectionChange = (section) => {
     startTransition(() => {
       setActiveSection(section);
-      // Trigger data fetching based on the active section
       if (!isMobile) {
         switch (section) {
           case "about":
@@ -183,7 +190,9 @@ const Home = () => {
           case "projects":
             fetchProjectsData();
             break;
-
+          case "certificate":
+            fetchCertificates();
+            break;
           case "blog":
             fetchBlogsData();
             break;
@@ -195,13 +204,14 @@ const Home = () => {
         }
       }
     });
-    setSidenav(false); // Close sidenav after selecting a section
+    // setSidenav(false);
   };
 
   const sections = {
     about: <About />,
     resume: <Resume />,
     projects: <Projects />,
+    certificate: <Certificate />,
     blog: <Blog />,
     contact: <Contact />,
   };
@@ -209,10 +219,10 @@ const Home = () => {
   return (
     <div className="w-full lgl:w-[85%] h-full lgl:h-[85%] bg-transparent text-white z-50 flex items-start justify-between p-4 lgl:p-0">
       {/* ================= Left Icons Start here ====================== */}
-      <div className="w-16 h-96 bg-transparent hidden lgl:flex flex-col gap-4">
+      <div className="w-16 h-96 bg-transparent hidden lgl:flex  flex-col gap-4">
         {/* ======= Home Icon start */}
         <div
-          onClick={() => setSidenav(false)}
+          // onClick={() => setSidenav(false)}
           className="w-full h-20 bg-bodyColor rounded-3xl flex justify-center items-center cursor-pointer group"
         >
           <div className="flex flex-col gap-1.5 overflow-hidden">
@@ -223,30 +233,7 @@ const Home = () => {
         </div>
         {/* ======= Home Icon End */}
 
-        {/* ============= Sidenav Start here ============= */}
-        {sidenav && (
-          <div className="w-full h-screen fixed top-0 left-0 bg-black bg-opacity-50 z-50">
-            <div className="w-96 h-full relative">
-              <motion.div
-                ref={sidenavRef}
-                initial={{ x: -500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full h-full bg-bodyColor overflow-y-scroll scrollbar-thin scrollbar-thumb-[#646464]"
-              >
-                <Sidenav />
-                <span
-                  onClick={() => setSidenav(false)}
-                  className="absolute top-0 -right-16 w-12 h-12 bg-bodyColor text-2xl text-textColor hover:text-designColor duration-300 cursor-pointer flex items-center justify-center z-50"
-                >
-                  <MdOutlineClose />
-                </span>
-              </motion.div>
-            </div>
-          </div>
-        )}
-        {/* ============= Sidenav End here =============== */}
-
+        
         {/* ======= Other Icons Start */}
         <div className="w-full h-80 bg-bodyColor rounded-3xl flex flex-col items-center justify-between py-6">
           <IconButton
@@ -261,11 +248,17 @@ const Home = () => {
             isActive={activeSection === "resume"}
             onClick={() => handleSectionChange("resume")}
           />
-          <IconButton
+          {/* <IconButton
             Icon={MdWork}
             label="Projects"
             isActive={activeSection === "projects"}
             onClick={() => handleSectionChange("projects")}
+          /> */}
+          <IconButton
+            Icon={FaCertificate}
+            label="Certificate"
+            isActive={activeSection === "certificate"}
+            onClick={() => handleSectionChange("certificate")}
           />
           <IconButton
             Icon={SiGooglechat}
@@ -301,6 +294,9 @@ const Home = () => {
               <div ref={projectsRef} data-section="projects">
                 {sections["projects"]}
               </div>
+              <div ref={certificateRef} data-section="certificate">
+                {sections["certificate"]}
+              </div>
               <div ref={blogRef} data-section="blog">
                 {sections["blog"]}
               </div>
@@ -326,6 +322,7 @@ const Home = () => {
       {/* ======================== Home Content End here ============================== */}
     </div>
   );
+
 };
 
 export default Home;
