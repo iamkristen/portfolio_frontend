@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from "react";
 import { useTypewriter, Cursor } from "react-simple-typewriter";
 import { BsCloudLightningFill } from "react-icons/bs";
-import CV from "../../assets/Kristen-cv.pdf";
+import CV from "../../assets/Ravi-Kushwaha-CV-2025.pdf";
 import { useAboutData } from "../../context/about_data";
 import { useSocialLinks } from "../../context/socail_link";
 import * as ReactIcons from "react-icons/fa";
@@ -89,7 +89,7 @@ const Left = () => {
             </button>
           </a>
           <a
-            href={`mailto:${aboutData.email}`}
+            href={`mailto:kuushwaha33ravi@gmail.com`}
             className="w-1/2 border-t-[1px] border-t-zinc-800 text-sm tracking-wide uppercase flex justify-center items-center gap-2 hover:text-designColor duration-300"
           >
             <button className="w-full h-full flex justify-center items-center gap-2">
