@@ -7,12 +7,11 @@ import React, {
   useTransition,
 } from "react";
 import { motion } from "framer-motion";
-import { FaUser, FaEnvelope,FaCertificate } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaCertificate } from "react-icons/fa";
 import { IoIosPaper } from "react-icons/io";
-// import { MdWork, MdOutlineClose } from "react-icons/md";
+import { MdWork } from "react-icons/md";
 import { SiGooglechat } from "react-icons/si";
 import Left from "./components/home/Left";
-// import Sidenav from "./components/home/sidenav/Sidenav";
 import IconButton from "./components/button/Iconbutton";
 import usePersistedState from "./usePersistedState";
 import Loader from "./components/loader/loader";
@@ -76,7 +75,6 @@ const Home = () => {
   //     document.removeEventListener("mousedown", handleClickOutside);
   //   };
   // }, []);
-
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -233,7 +231,6 @@ const Home = () => {
         </div>
         {/* ======= Home Icon End */}
 
-        
         {/* ======= Other Icons Start */}
         <div className="w-full h-80 bg-bodyColor rounded-3xl flex flex-col items-center justify-between py-6">
           <IconButton
@@ -248,12 +245,12 @@ const Home = () => {
             isActive={activeSection === "resume"}
             onClick={() => handleSectionChange("resume")}
           />
-          {/* <IconButton
+          <IconButton
             Icon={MdWork}
             label="Projects"
             isActive={activeSection === "projects"}
             onClick={() => handleSectionChange("projects")}
-          /> */}
+          />
           <IconButton
             Icon={FaCertificate}
             label="Certificate"
@@ -322,7 +319,6 @@ const Home = () => {
       {/* ======================== Home Content End here ============================== */}
     </div>
   );
-
 };
 
 export default Home;
